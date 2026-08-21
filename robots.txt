@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tayyab-automation.com/sitemap.xml
