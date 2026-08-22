@@ -1,25 +1,24 @@
 :root {
-    --text-primary: #f5f5f5;
-    --text-secondary: #9aa0a6;
-    --accent: #5d6c57; /* muted olive green */
-    --border-color: rgba(255, 255, 255, 0.15);
-    
-    /* Hero Identity Palette */
-    --hero-title-color: #F3F0E8;
-    --hero-subtitle-color: #A8B39A;
-    --hero-circle-bg: #68735F;
-    --hero-circle-fg: #F3F0E8;
-    
-    --font-heading: 'Playfair Display', serif;
-    --font-body: 'Inter', sans-serif;
-    --font-signature: 'Caveat', cursive;
+    /* ---- Dark olive editorial palette ---- */
+    --bg:          #14170F; /* page background, very dark warm green-black */
+    --bg-elevated: #1C1F16; /* cards, modals, elevated surfaces */
+    --text:        #EDE8DA; /* primary text, warm cream */
+    --text-muted:  #9A9A8C; /* body copy, secondary text */
+    --accent:      #A8B583; /* sage/olive - headings, labels, icons */
+    --accent-deep: #6E7A4E; /* darker olive for decorative shapes */
+    --line:        #2E3325; /* hairline dividers and borders */
+
+    /* ---- Type ---- */
+    --font-display: 'Oswald', 'Arial Narrow', sans-serif; /* heavy condensed */
+    --font-heading: 'Playfair Display', serif;            /* elegant serif */
+    --font-body:    'Inter', sans-serif;
 }
 
 body, html {
     margin: 0;
     padding: 0;
-    background-color: #000;
-    color: var(--text-primary);
+    background-color: var(--bg);
+    color: var(--text);
     font-family: var(--font-body);
     /* Hide scrollbar for a cleaner look */
     -ms-overflow-style: none;
@@ -27,30 +26,6 @@ body, html {
 }
 body::-webkit-scrollbar {
     display: none;
-}
-
-/* Canvas background */
-#anim-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 0;
-    pointer-events: none;
-}
-
-/* Loading Overlay */
-#loading {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-family: var(--font-body);
-    font-size: 1.2rem;
-    z-index: 10;
-    pointer-events: none;
 }
 
 /* Main UI Container */
@@ -72,11 +47,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 p {
     margin: 0;
-    line-height: 1.5;
-    color: var(--text-secondary);
+    line-height: 1.7;
+    color: var(--text-muted);
 }
 a {
-    color: var(--text-primary);
+    color: var(--text);
     text-decoration: none;
 }
 
@@ -89,7 +64,7 @@ a:focus-visible, button:focus-visible {
 
 /* Section Borders */
 section {
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--line);
     padding: 6rem 0;
     box-sizing: border-box;
 }
@@ -107,37 +82,94 @@ nav {
 
 /* ------------- HERO SECTION ------------- */
 .hero {
+    /* --right-col is reserved space the portrait may never enter, which is what
+       keeps the badge and location text off the figure at every width. */
+    --photo-ratio: 1.0865;              /* 1307 / 1203 */
+    --photo-h: clamp(18rem, 70vh, 46rem);
+    --photo-left: max(34%, 500px); /* clears the CTA row (~485px wide) */
+    --right-col: 170px;
+    /* Space the portrait may occupy, the width it actually renders at, and the
+       height that width implies. The halo derives from the SAME figure, so it
+       can never disagree with it or spill out of the container. */
+    --photo-max-w: calc(100% - var(--photo-left) - var(--right-col));
+    --photo-w: min(calc(var(--photo-h) * var(--photo-ratio)), var(--photo-max-w));
+    --photo-render-h: calc(var(--photo-w) / var(--photo-ratio));
+    --circle: calc(var(--photo-render-h) * 0.62);
+
+    position: relative;
     min-height: 90vh;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: stretch;
+    gap: 2.5rem; /* text column and portrait never touch */
     border-top: none;
     padding-top: 2rem;
+    padding-bottom: 0; /* the portrait grounds onto the section divider */
+}
+
+/* Decorative only. Sits inside the container's right edge so it can never
+   create horizontal scroll, and below the content via z-index. */
+.hero::before {
+    content: '';
+    position: absolute;
+    /* NB: --photo-render-h contains a percentage, and percentages in `bottom`
+       resolve against HEIGHT, not width. Use the percentage-free height token
+       here so the halo lands where the head actually is. */
+    bottom: calc(var(--photo-h) * 0.40);
+    left: calc(var(--photo-left) + var(--photo-w) * 0.55 - var(--circle) / 2);
+    width: var(--circle);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: var(--accent-deep);
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* ---- Hero portrait ----
+   Anchored by its LEFT edge so the overlap with the headline is deterministic
+   regardless of the file's aspect ratio; max-width closes the gap to the right
+   edge so it can never cause horizontal scroll. */
+.hero-photo {
+    position: absolute;
+    left: var(--photo-left);
+    bottom: 0;                 /* grounds onto the section divider */
+    height: var(--photo-h);
+    width: auto;
+    max-width: var(--photo-max-w);
+    object-fit: contain;
+    object-position: bottom center; /* whole figure shown - head never cropped */
+    z-index: 1;                     /* above the halo, below the headline */
+    pointer-events: none;
 }
 
 .hero-left {
-    max-width: 460px;
+    position: relative;
+    z-index: 2; /* headline always renders over the portrait */
+    max-width: 560px;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: 1.5rem;
 }
 .hero-greeting {
-    font-size: 0.85rem;
-    letter-spacing: 0.1em;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: var(--text-secondary);
+    color: var(--text-muted);
 }
 .hero-title {
-    font-size: 4.5rem;
-    line-height: 1.08;
+    font-family: var(--font-heading);
+    font-size: clamp(2.4rem, 4.4vw, 3.9rem);
+    line-height: 1.1;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: var(--hero-title-color); /* #F3F0E8 */
+    color: var(--text);
 }
 .hero-badge {
-    background-color: rgba(104, 115, 95, 0.25);
-    color: var(--hero-subtitle-color); /* #A8B39A */
-    border: 1px solid rgba(168, 179, 154, 0.35);
+    background-color: rgba(168, 181, 131, 0.10);
+    color: var(--accent); /* #A8B39A */
+    border: 1px solid rgba(168, 181, 131, 0.35);
     padding: 0.5rem 1rem;
     display: inline-block;
     align-self: flex-start;
@@ -157,21 +189,29 @@ nav {
     margin-top: 0.5rem;
 }
 .btn-view-work {
-    border-color: transparent;
+    border-color: var(--line);
+    color: var(--text-muted);
 }
 
 .hero-right {
+    /* deliberately NOT positioned: the portrait must anchor to .hero, not to
+       this rail. Badge and info carry their own z-index instead. */
+    flex: 0 0 var(--right-col);
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 4rem;
+    justify-content: flex-start;
+    padding-top: 1.5rem; /* clearance from the top edge */
+    gap: 2rem;
     text-align: right;
 }
 .circular-badge {
     position: relative;
-    width: 150px;
-    height: 150px;
-    background-color: var(--hero-circle-bg); /* #68735F */
+    z-index: 3;
+    width: 108px;
+    height: 108px;
+    flex-shrink: 0;
+    background-color: var(--accent);
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -179,8 +219,8 @@ nav {
 }
 .circular-badge::after {
     content: '✦';
-    font-size: 2rem;
-    color: var(--hero-circle-fg); /* #F3F0E8 */
+    font-size: 1.4rem;
+    color: var(--bg);
 }
 .circular-text {
     position: absolute;
@@ -193,17 +233,19 @@ nav {
     height: 100%;
 }
 .circular-text text {
-    fill: var(--hero-circle-fg); /* #F3F0E8 */
+    fill: var(--bg);
 }
 @keyframes rotate {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 .hero-info {
+    position: relative;
+    z-index: 3; /* stays legible on top of the portrait */
     font-size: 0.85rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--text-secondary);
+    color: var(--text-muted);
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -230,9 +272,14 @@ nav {
     font-size: 1.15rem;
     line-height: 1.8;
     letter-spacing: 0.01em;
-    color: var(--text-primary);
+    color: var(--text);
     max-width: 800px;
     margin-top: 0.25rem;
+}
+.about-content .about-body {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    max-width: 800px;
 }
 .tech-stack {
     display: flex;
@@ -242,13 +289,25 @@ nav {
 }
 .tech-tag {
     padding: 0.6rem 1.2rem;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--line);
     border-radius: 6px;
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--text-secondary);
+    color: var(--text-muted);
     white-space: nowrap;
+}
+
+/* Left rail: the heading tracks the reader while the long right column
+   scrolls past, so a short label column reads as deliberate, not unfinished.
+   align-self:start is required - a stretched grid item cannot stick. */
+.services > .section-title,
+.about > .section-title,
+.work > .work-info,
+.footer > .footer-left {
+    position: sticky;
+    top: 2rem;
+    align-self: start;
 }
 
 /* ------------- SERVICES SECTION ------------- */
@@ -263,22 +322,24 @@ nav {
     gap: 1rem;
 }
 .section-subtitle {
-    font-size: 0.75rem;
-    letter-spacing: 0.1em;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: var(--text-secondary);
+    color: var(--text-muted);
 }
 .section-title h2 {
-    font-size: 3.5rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.25rem, 4.1vw, 3.7rem);
     text-transform: uppercase;
     color: var(--accent);
-    letter-spacing: 0.05em;
-    line-height: 1.05;
+    letter-spacing: -0.02em;
+    line-height: 0.95;
 }
 
 .services-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
     row-gap: 4rem;
 }
@@ -286,17 +347,17 @@ nav {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    border-left: 1px solid var(--border-color);
+    border-left: 1px solid var(--line);
     padding-left: 2rem;
 }
-.service-item:first-child {
+.service-item:nth-child(odd) {
     border-left: none;
     padding-left: 0;
 }
 .service-icon {
     width: 24px;
     height: 24px;
-    stroke: var(--text-secondary);
+    stroke: var(--accent);
     stroke-width: 1.5;
     fill: none;
 }
@@ -308,7 +369,8 @@ nav {
     letter-spacing: 0.05em;
 }
 .service-item p {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
 }
 
 /* ------------- WORK SECTION ------------- */
@@ -327,8 +389,9 @@ nav {
 }
 .btn-outline {
     display: inline-block;
+    box-sizing: border-box;
     padding: 1rem 2rem;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--line);
     border-radius: 4px;
     font-size: 0.75rem;
     letter-spacing: 0.1em;
@@ -337,42 +400,121 @@ nav {
     transition: background-color 0.3s, border-color 0.3s;
 }
 .btn-outline:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: var(--text-primary);
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+}
+
+/* ------------- PRIMARY CTA (WhatsApp) ------------- */
+/* One style, reused in the hero, the work section and the mobile bar. */
+.btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 48px;              /* thumb target, exceeds the 44px minimum */
+    padding: 0.9rem 1.75rem;
+    box-sizing: border-box;
+    background-color: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+}
+.btn-whatsapp:hover {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+    transform: translateY(-2px);
+}
+.btn-wa-icon {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    flex-shrink: 0;
+}
+
+/* Work section: cards + closing CTA share the right-hand column */
+.work-main {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    min-width: 0;
+}
+.work-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+}
+.work-cta p {
+    font-size: 0.9rem;
+    max-width: 520px;
+}
+
+/* Mobile-only sticky CTA bar */
+.mobile-cta-bar {
+    display: none;
 }
 
 .work-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
 }
 .work-card {
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--border-color);
-    background-color: rgba(0, 0, 0, 0.5); /* subtle transparency */
-    transition: transform 0.3s;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: var(--bg-elevated);
+    transition: transform 0.3s, border-color 0.3s;
+}
+.work-card:hover {
+    border-color: var(--accent-deep);
 }
 .work-card:hover {
     transform: translateY(-5px);
 }
-.work-image {
+/* 16:9 demo video wrapper (replaces the old square placeholder) */
+.work-video {
+    position: relative;
     width: 100%;
-    aspect-ratio: 1;
-    background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: rgba(255,255,255,0.1);
-    font-family: var(--font-heading);
-    font-size: 2rem;
+    aspect-ratio: 16 / 9;
+    background-color: var(--bg-elevated);
+    overflow: hidden;
+}
+.work-video iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
 }
 .work-details {
     padding: 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid var(--border-color);
+    gap: 1rem;
+    border-top: 1px solid var(--line);
+    cursor: pointer;
+}
+.work-details:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
 }
 .work-details h3 {
     font-size: 0.9rem;
@@ -382,23 +524,12 @@ nav {
     margin-bottom: 0.25rem;
 }
 .work-details p {
-    font-size: 0.75rem;
-}
-.project-tag {
-    display: inline-block;
-    font-size: 0.65rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-left: 0.35rem;
-    padding: 0.1rem 0.35rem;
-    border: 1px solid var(--border-color);
-    border-radius: 3px;
+    font-size: 0.8rem;
 }
 .arrow-icon {
     width: 20px;
     height: 20px;
-    stroke: var(--text-primary);
+    stroke: var(--accent);
     stroke-width: 1.5;
     fill: none;
 }
@@ -408,6 +539,9 @@ nav {
     display: grid;
     grid-template-columns: 250px 1fr;
     gap: 4rem;
+}
+.process-info p {
+    font-size: 0.95rem;
 }
 .process-grid {
     display: grid;
@@ -421,7 +555,7 @@ nav {
     left: 20px;
     right: 20px;
     height: 1px;
-    background-color: var(--border-color);
+    background-color: var(--line);
     z-index: -1;
 }
 .process-step {
@@ -430,12 +564,31 @@ nav {
     gap: 1rem;
 }
 .step-number {
-    font-family: var(--font-heading);
-    font-size: 2rem;
-    color: var(--accent);
-    background-color: #000; /* to cover the line behind it */
+    font-family: var(--font-display);
+    font-weight: 200;
+    font-size: 2.75rem;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    background-color: var(--bg); /* to cover the line behind it */
     display: inline-block;
     padding-right: 1rem;
+}
+/* Small dot connector sitting in the gap before each step after the first.
+   Children are: .process-line, then the five .process-step blocks. */
+.process-step {
+    position: relative;
+}
+.process-grid > .process-step:not(:nth-child(2))::before {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: -0.9rem;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: var(--accent-deep);
+    pointer-events: none;
 }
 .process-step h3 {
     font-size: 0.85rem;
@@ -445,11 +598,13 @@ nav {
     letter-spacing: 0.1em;
 }
 .process-step p {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
 }
 
 /* ------------- FOOTER ------------- */
 .footer {
+    position: relative; /* containing block for the decorative portrait */
     display: grid;
     grid-template-columns: 250px 1fr;
     gap: 4rem;
@@ -458,16 +613,45 @@ nav {
 .footer-left {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+}
+
+/* ---- Footer portrait ----
+   Absolutely positioned so it stays out of the grid entirely: bottom-left of
+   the section, below the label, bleeding off the left edge. The bleed is
+   capped at the container's own 4vw padding so it can never reach past the
+   viewport and create horizontal scroll. */
+.footer-photo {
+    position: absolute;
+    left: 0;            /* fully inside the section, no viewport bleed */
+    bottom: 0;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: var(--accent-deep);
+    pointer-events: none;
+    z-index: 0;
+}
+/* The source carries 26% empty space above the head. object-position pulls the
+   crop window down past it so the face lands in the circle's upper-middle and
+   the chest is cut by the circle's lower edge. */
+.footer-photo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center 47%;
 }
 .footer-right {
     display: flex;
     flex-direction: column;
 }
 .footer-big-text {
-    font-family: var(--font-heading);
-    font-size: 7vw;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(3rem, 8vw, 6rem);
     line-height: 0.9;
+    letter-spacing: -0.02em;
     text-transform: uppercase;
     color: var(--accent);
     margin-bottom: 3rem;
@@ -487,18 +671,18 @@ nav {
     font-family: var(--font-body);
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--text-secondary);
+    color: var(--text-muted);
 }
 .footer-link {
     font-size: 0.85rem;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--text-primary);
+    color: var(--text);
     transition: color 0.25s ease;
 }
 .footer-link:hover {
-    color: #fff;
+    color: var(--text);
 }
 .social-icons {
     display: flex;
@@ -511,15 +695,15 @@ nav {
     justify-content: center;
     width: 38px;
     height: 38px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--line);
     border-radius: 4px;
-    color: var(--text-primary);
+    color: var(--text);
     transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.2s ease, color 0.25s ease;
 }
 .social-link:hover {
     border-color: var(--accent);
-    background-color: rgba(93, 108, 87, 0.15);
-    color: #fff;
+    background-color: rgba(168, 181, 131, 0.12);
+    color: var(--text);
     transform: translateY(-2px);
 }
 .social-icon {
@@ -531,19 +715,8 @@ nav {
     stroke-linejoin: round;
     fill: none;
 }
-.contact-phone-item {
-    display: flex;
-    align-items: center;
-}
-.phone-label {
-    color: var(--accent);
-    font-weight: 500;
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
-    margin-right: 0.4rem;
-}
 .footer-note {
-    color: var(--text-secondary);
+    color: var(--text-muted);
     font-size: 0.8rem;
     margin-top: 0.25rem;
 }
@@ -558,7 +731,7 @@ nav {
     align-items: center;
 }
 .action-cta-link:hover {
-    color: #fff;
+    color: var(--text);
     transform: translateX(4px);
 }
 
@@ -569,7 +742,7 @@ nav {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.85);
+    background-color: rgba(20, 23, 15, 0.88);
     backdrop-filter: blur(5px);
     z-index: 100;
     display: flex;
@@ -579,15 +752,14 @@ nav {
     box-sizing: border-box;
 }
 .modal-container {
-    background-color: #0a0a0a;
-    border: 1px solid var(--border-color);
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--line);
     width: 100%;
     max-width: 800px;
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
     border-radius: 8px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
 }
 .modal-close {
     position: absolute;
@@ -595,24 +767,24 @@ nav {
     right: 1.5rem;
     background: none;
     border: none;
-    color: var(--text-secondary);
+    color: var(--text-muted);
     cursor: pointer;
     transition: color 0.3s;
 }
 .modal-close:hover {
-    color: #fff;
+    color: var(--text);
 }
 .modal-content {
     padding: 3rem;
 }
 .modal-header {
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--line);
     padding-bottom: 2rem;
     margin-bottom: 2rem;
 }
 .modal-header h2 {
     font-size: 2.5rem;
-    color: var(--hero-title-color);
+    color: var(--text);
     margin-bottom: 0.5rem;
 }
 .modal-header p {
@@ -633,12 +805,12 @@ nav {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 1rem;
-    color: var(--text-primary);
+    color: var(--text);
 }
 .modal-section p, .modal-section li {
     font-size: 0.95rem;
     line-height: 1.6;
-    color: var(--text-secondary);
+    color: var(--text-muted);
 }
 .modal-section ul {
     margin: 0;
@@ -657,6 +829,16 @@ nav {
         grid-template-columns: 1fr;
         gap: 3rem;
     }
+    .footer-photo {
+        display: none;
+    }
+    /* Columns stack here, so the rail has nothing to sit beside */
+    .services > .section-title,
+    .about > .section-title,
+    .work > .work-info,
+    .footer > .footer-left {
+        position: static;
+    }
     .services-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 3rem;
@@ -665,11 +847,27 @@ nav {
         border-left: none;
         padding-left: 0;
     }
-    .work-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
     .process-grid {
         grid-template-columns: repeat(3, 1fr);
+    }
+    .hero {
+        --photo-left: max(34%, 440px);
+        --right-col: 150px;
+    }
+    .hero-left {
+        max-width: 420px;
+    }
+}
+@media (max-width: 900px) {
+    .hero {
+        /* 440px floor keeps the figure clear of the CTA row (~420px) here too */
+        --photo-left: max(30%, 440px);
+        --right-col: 140px;
+    }
+    /* 3-up rows: step 04 starts a new row, so drop its connector dot
+       (children are .process-line, then the five steps). */
+    .process-grid > .process-step:nth-child(5)::before {
+        display: none;
     }
 }
 @media (max-width: 768px) {
@@ -687,10 +885,82 @@ nav {
         align-self: center;
     }
     .hero-title {
-        font-size: 3.2rem;
+        font-size: 2.4rem;
     }
-    .work-grid, .process-grid, .footer-bottom {
+    /* Single column: portrait sits directly under the hero text, smaller,
+       centred, no overlap. Fixed height keeps it free of layout shift. */
+    .hero-photo {
+        position: static;
+        left: auto;
+        bottom: auto;
+        order: -1;
+        display: block;
+        height: 32vh;
+        max-height: 250px;
+        width: auto;
+        max-width: 82%;
+        margin: 0 auto;
+    }
+    .hero-right {
+        flex: 0 1 auto;
+        width: 100%;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: 0;
+        text-align: center;
+    }
+    .hero::before {
+        width: min(64vw, 260px);
+        left: 50%;
+        bottom: auto;
+        top: 64%;
+        transform: translateX(-50%);
+        opacity: 0.09;
+    }
+    /* Stack the hero buttons full-width so neither can overflow */
+    .hero-actions {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+    .hero-actions .btn-whatsapp,
+    .hero-actions .btn-outline {
+        width: 100%;
+        max-width: 340px;
+    }
+    .work-cta {
+        align-items: stretch;
+    }
+    .work-cta .btn-whatsapp {
+        width: 100%;
+    }
+    /* Sticky CTA bar: mobile only */
+    .mobile-cta-bar {
+        display: block;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 90;
+        padding: 0.75rem 4vw;
+        padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+        background-color: rgba(20, 23, 15, 0.94);
+        backdrop-filter: blur(8px);
+        border-top: 1px solid var(--line);
+        box-sizing: border-box;
+    }
+    .mobile-cta-bar .btn-whatsapp {
+        width: 100%;
+    }
+    /* Keep the sticky bar from covering the end of the footer */
+    body {
+        padding-bottom: 88px;
+    }
+    .work-grid, .process-grid, .footer-bottom, .services-grid {
         grid-template-columns: 1fr;
+    }
+    .services-grid {
+        row-gap: 3rem;
     }
     .modal-content {
         padding: 2rem 1.5rem;
@@ -698,7 +968,8 @@ nav {
     .modal-header h2 {
         font-size: 2rem;
     }
-    .process-line {
+    .process-line,
+    .process-grid > .process-step::before {
         display: none;
     }
     .footer-big-text {
