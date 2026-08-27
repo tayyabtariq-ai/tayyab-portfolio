@@ -93,8 +93,17 @@
         
         <!-- Navigation -->
         <nav>
-            <div>TAYYAB TARIQ</div>
-            <div>AI AUTOMATION ENGINEER</div>
+            <div class="nav-brand">TAYYAB TARIQ</div>
+            <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-hidden="true">
+            <label for="nav-toggle" class="nav-hamburger" aria-label="Toggle navigation menu">
+                <span></span><span></span><span></span>
+            </label>
+            <ul class="nav-menu">
+                <li><a href="#about">Expertise</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#work">Work</a></li>
+                <li><a href="#footer">Contact</a></li>
+            </ul>
         </nav>
 
         <!-- Hero Section -->
@@ -111,7 +120,7 @@
                         <svg class="btn-wa-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9l-5.05.9"></path></svg>
                         Get Started on WhatsApp
                     </a>
-                    <a href="#work" class="btn-outline btn-view-work">VIEW MY WORK</a>
+                    <a href="https://calendly.com/getdentavoice/clinic-automation-call" class="btn-outline btn-view-work" target="_blank" rel="noopener noreferrer">BOOK APPOINTMENT</a>
                 </div>
             </div>
             <div class="hero-right">
@@ -265,6 +274,24 @@
                             <svg class="arrow-icon" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                         </div>
                     </div>
+                    <div class="work-card" data-project-id="receptionist-live-call">
+                        <!-- Demo video: AI Receptionist Live Call Demo -->
+                    <div class="work-video">
+                        <iframe src="https://www.youtube-nocookie.com/embed/5nwWUJLJU54"
+                            title="Demo video: AI Receptionist Live Call Demo"
+                            loading="lazy"
+                            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allowfullscreen></iframe>
+                    </div>
+                        <div class="work-details">
+                            <div>
+                                <h3>AI Receptionist Live Call Demo</h3>
+                                <p>AI Agent • Live Call</p>
+                            </div>
+                            <svg class="arrow-icon" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </div>
+                    </div>
                 </div>
                 <div class="work-cta">
                     <p>Want this running in your clinic? Tell me what your front desk is dealing with and I'll tell you what I'd automate first.</p>
@@ -315,18 +342,23 @@
 
         <!-- Footer / Contact Section -->
         <section class="footer" id="footer">
-            <!-- Decorative portrait: circular crop, bleeds off the left edge -->
-            <div class="footer-photo">
-                <img src="public/tayyab-footer.png" alt="Tayyab Tariq"
-                     loading="lazy" decoding="async" width="334" height="610">
-            </div>
             <div class="footer-left">
                 <div class="section-subtitle">LET'S CREATE SOMETHING</div>
             </div>
             <div class="footer-right">
                 <h2 class="footer-big-text">TOGETHER</h2>
+                <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" class="footer-link action-cta-link btn-resume" aria-label="View and download my resume" style="margin-bottom: 3rem; color: var(--text);">
+                    GET RESUME &rarr;
+                </a>
                 <div class="footer-bottom">
-                    <!-- Column 1: Social Profiles -->
+                    <!-- LEFT half: portrait + social links + direct contact, stacked -->
+                    <div class="footer-bottom-left">
+                    <!-- Decorative portrait, alongside the contact blocks -->
+                    <div class="footer-photo">
+                        <img src="public/tayyab-footer.png" alt="Tayyab Tariq"
+                             loading="lazy" decoding="async" width="334" height="610">
+                    </div>
+                    <!-- Social Profiles -->
                     <div class="footer-col">
                         <h4>LET'S CONNECT</h4>
                         <div class="social-icons">
@@ -342,24 +374,31 @@
                         </div>
                     </div>
 
-                    <!-- Column 2: Direct Contact (Email & Numbers) -->
+                    <!-- Direct Contact (Email & Numbers) -->
                     <div class="footer-col">
                         <h4>DIRECT CONTACT</h4>
                         <a href="mailto:getdentavoice@gmail.com" class="footer-link contact-email" aria-label="Send email to Tayyab Tariq">getdentavoice@gmail.com</a>
 
                         <p class="footer-link footer-note">Working with clinics in the US, UK and Gulf</p>
                     </div>
+                    </div>
 
-                    <!-- Column 3: Action / Booking (QR code completely removed) -->
+                    <!-- RIGHT half: booking form -->
                     <div class="footer-col footer-action-col">
                         <h4>GET IN TOUCH</h4>
-                        <a href="https://wa.me/923097934907?text=Hi%20Tayyab%2C%20I%20saw%20your%20portfolio%20and%20want%20to%20talk%20about%20automation%20for%20my%20clinic" class="btn-whatsapp js-cta-whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Start a WhatsApp conversation with Tayyab Tariq">
-                            <svg class="btn-wa-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9l-5.05.9"></path></svg>
-                            Get Started on WhatsApp
-                        </a>
-                        <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" class="footer-link action-cta-link btn-resume" aria-label="View and download my resume" style="margin-top: 0.5rem; color: var(--text);">
-                            GET RESUME &rarr;
-                        </a>
+                        <iframe
+                          id="JotFormIFrame-262375628731059"
+                          title="Tell me what your front desk is dealing with"
+                          onload="window.parent.scrollTo(0,0)"
+                          allowtransparency="true"
+                          allow="geolocation; microphone; camera; fullscreen; payment"
+                          src="https://form.jotform.com/262375628731059"
+                          frameborder="0"
+                          style="min-width:100%;max-width:100%;height:700px;border:none;background:transparent;"
+                          scrolling="no">
+                        </iframe>
+                        <script src='https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js'></script>
+                        <script>window.jotformEmbedHandler("iframe[id='JotFormIFrame-262375628731059']", "https://form.jotform.com/")</script>
                     </div>
                 </div>
             </div>

@@ -17,6 +17,7 @@
 body, html {
     margin: 0;
     padding: 0;
+    scroll-behavior: smooth;
     background-color: var(--bg);
     color: var(--text);
     font-family: var(--font-body);
@@ -78,6 +79,28 @@ nav {
     font-size: 0.85rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
+}
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.nav-menu a {
+    color: var(--text);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.25s ease;
+}
+.nav-menu a:hover {
+    color: var(--accent);
+}
+/* Hamburger controls live only on small screens */
+.nav-toggle,
+.nav-hamburger {
+    display: none;
 }
 
 /* ------------- HERO SECTION ------------- */
@@ -604,11 +627,11 @@ nav {
 
 /* ------------- FOOTER ------------- */
 .footer {
-    position: relative; /* containing block for the decorative portrait */
+    position: relative;
     display: grid;
     grid-template-columns: 250px 1fr;
     gap: 4rem;
-    padding-bottom: 6rem;
+    padding-bottom: 2.5rem;
 }
 .footer-left {
     display: flex;
@@ -616,21 +639,15 @@ nav {
 }
 
 /* ---- Footer portrait ----
-   Absolutely positioned so it stays out of the grid entirely: bottom-left of
-   the section, below the label, bleeding off the left edge. The bleed is
-   capped at the container's own 4vw padding so it can never reach past the
-   viewport and create horizontal scroll. */
+   Sits in the flow at the top of the left column, above the contact blocks,
+   so the left half carries visual weight against the form on the right. */
 .footer-photo {
-    position: absolute;
-    left: 0;            /* fully inside the section, no viewport bleed */
-    bottom: 0;
-    width: 200px;
-    height: 200px;
+    width: 132px;
+    height: 132px;
     border-radius: 50%;
     overflow: hidden;
     background-color: var(--accent-deep);
     pointer-events: none;
-    z-index: 0;
 }
 /* The source carries 26% empty space above the head. object-position pulls the
    crop window down past it so the face lands in the circle's upper-middle and
@@ -658,7 +675,14 @@ nav {
 }
 .footer-bottom {
     display: grid;
-    grid-template-columns: 1fr 1.25fr 1fr;
+    grid-template-columns: 280px 1fr;
+    gap: 2.5rem;
+    align-items: start;
+}
+/* Left half stacks the social links above the direct-contact block */
+.footer-bottom-left {
+    display: flex;
+    flex-direction: column;
     gap: 2.5rem;
 }
 .footer-col {
@@ -871,6 +895,60 @@ nav {
     }
 }
 @media (max-width: 768px) {
+    /* Collapse the nav into a hamburger */
+    nav {
+        position: relative;
+        flex-wrap: wrap;
+    }
+    .nav-hamburger {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        width: 28px;
+        height: 28px;
+        cursor: pointer;
+    }
+    .nav-hamburger span {
+        display: block;
+        width: 100%;
+        height: 2px;
+        background-color: var(--text);
+        transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .nav-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        margin-top: 0.5rem;
+        background-color: var(--bg-elevated);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 0.5rem 0;
+        z-index: 95;
+    }
+    .nav-toggle:checked ~ .nav-menu {
+        display: flex;
+    }
+    .nav-menu a {
+        display: block;
+        padding: 0.9rem 1.5rem;
+    }
+    /* Hamburger morphs to a close (X) when open */
+    .nav-toggle:checked ~ .nav-hamburger span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+    .nav-toggle:checked ~ .nav-hamburger span:nth-child(2) {
+        opacity: 0;
+    }
+    .nav-toggle:checked ~ .nav-hamburger span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
     .hero {
         flex-direction: column;
         justify-content: center;
@@ -975,4 +1053,49 @@ nav {
     .footer-big-text {
         font-size: 4rem;
     }
+}
+
+/* ===== Footer layout fix ===== */
+.footer-bottom {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.footer-bottom-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.footer-bottom-left > *,
+.footer-action-col > *:first-child {
+  margin-top: 0;
+}
+
+.footer-photo {
+  margin: 0;
+}
+
+.footer-photo img {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  object-position: center 50%;
+  display: block;
+}
+
+.footer-action-col {
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .footer-bottom {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .footer-photo img {
+    width: 140px;
+  }
 }
